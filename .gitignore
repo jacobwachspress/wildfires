@@ -1,0 +1,11 @@
+*.png
+*.ipynb
+*.pyc
+*.exe
+*.mdb
+*.accdb
+*.shp
+*.shx
+*.cpg
+*.dbf
+*.prj

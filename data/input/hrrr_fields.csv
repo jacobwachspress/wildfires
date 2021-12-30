@@ -1,0 +1,8 @@
+download_code,field_name,description,units
+TMP:2 m,t2m,Temperature at 2 m above ground level,K
+SPFH:2 m,sh2,Specific humidity at 2 m above ground level,kg/kg
+UGRD:10 m,u10,U-component of wind at 10 m above ground level,m/s
+VGRD:10 m,v10,V-component of wind at 10 m above ground level,m/s
+LTNG,ltng,Lightning,Flashes/km^2/5min
+PRATE,prate,Precipitation rate,kg/m^2/s
+PRES:surface,sp,Surface pressure,Pa
