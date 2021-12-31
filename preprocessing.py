@@ -6,9 +6,23 @@ import datetime as dt
 from dateutil import parser
 from shapely import geometry
 from herbie.archive import Herbie
-import matplotlib.pyplot as plt
 import pickle
 import geopy.distance as dst
+import os
+
+
+
+def main():
+
+    viirs_path = r"C:\Users\mit\Dropbox (MIT)\Jacob_Sequoia_Sara\example_data\viirs_npp_2020\fire_archive_SV-C2_230749.shp"
+    SIT_conn_str = (r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};'
+                    r'DBQ=C:\Users\mit\Documents\wildfires\data\sit\2020 SIT DATA.accdb;')
+    boundaries_path = 'data/historical_perimeters/InteragencyFirePerimeterHistory.shp'
+
+    all_fire_obs, boundaries, fire_sit_lookup = get_fire_pixels(viirs_path, SIT_conn_str, boundaries_path, 2020)
+    all_fire_obs.to_csv('data/clean/viirs.csv', index=False)
+    boundaries.to_pickle('data/clean/merged_boundaries.pkl')
+    fire_sit_lookup.to_csv('data/clean/fire_pixels_lookup.csv', index=False)
 
 
 def slice_df(df, field, lower_bound, upper_bound):
@@ -215,24 +229,47 @@ def get_grid_from_bbox(bbox, tick_miles, buffer_miles=0):
 
 
 def extract_hrrr(time, fields):
+
+    # get HRRR forecast initialization at this time (should be real-time weather)
     H = Herbie(time, model='hrrr', product='sfc', fxx=0)
 
-    d = {}
+    # initialize dictionary that will become the output DataFrame
+    output_dict = {}
+
+    # initialize list of latitudes, which will be set on first iteration
     lat = None
+
+    # for each weather field we care about
     for _, field in fields.iterrows():
 
+        # get the corresponding HRRR download code
         download_code = field['download_code']
+
+        # unzip the data in xarray format
         arr = H.xarray(download_code)
+
+        # if we don't have the lat/lon data yet
         if lat is None:
+
+            # grab it and save to the output_dict
             lat = np.ravel(np.asarray(arr['latitude']))
             lon = np.ravel(np.asarray(arr['longitude']))
-            d['lat'] = lat
-            d['lon'] = lon
+            output_dict['lat'] = lat
+            output_dict['lon'] = lon
+
+        # otherwise, make sure this lat/lon data matches
         else:
             assert all(lat == np.ravel(np.asarray(arr['latitude'])))
             assert all(lon == np.ravel(np.asarray(arr['longitude'])))
-        d[download_code] = np.ravel(np.asarray(arr[field['field_name']]))
-    df = pd.DataFrame(d)
+
+        # add this weather field to the output_dict
+        output_dict[download_code] = np.ravel(np.asarray(arr[field['field_name']]))
+
+    # dict to DataFrame
+    df = pd.DataFrame(output_dict)
+
+    # longitude convention in HRRR is [0, 360], so 180 -> -180 and
+    # subtracting 360 works since USA is in [180, 360]
     df['lon'] -= 360
 
     return df
@@ -304,6 +341,118 @@ def aggregate_knn_data(knn_lookup, source_df, agg_cols,
     return knn
 
 
+def merge_all_fire_and_weather_data(fire_pixels, boundaries, weather_fields, out_path,
+                                    hr_utc=12, tick_miles=0.6, fire_duration_buffer=0, time_buffer=3600 * 24, beta=-1):
+
+    # make the path
+    if not os.path.isdir(out_path):
+        os.mkdir(out_path)
+
+    fire_obs_by_incident = {}
+    incidents_by_time = {}
+
+    print(dt.datetime.now())
+    print('determining active fires at each time')
+    # for every incident
+    for incident_id in fire_pixels['INCIDENT_IDENTIFIER'].unique():
+
+        # restrict fire observations to this incident
+        this_fire = fire_pixels[fire_pixels['INCIDENT_IDENTIFIER'] == incident_id]
+
+        # get all the times that we need to check for that fire
+        first_time = ref_to_datetime(this_fire['time_from_reference'].min())
+        first_time = first_time - dt.timedelta(days=1 + fire_duration_buffer)
+        first_time = first_time.replace(hour=hr_utc, minute=0)
+        last_time = ref_to_datetime(this_fire['time_from_reference'].max())
+        last_time = last_time + dt.timedelta(days=1 + fire_duration_buffer)
+        last_time = last_time.replace(hour=hr_utc, minute=0)
+        total_days = (last_time - first_time).days
+        all_times = [first_time + dt.timedelta(days=i) for i in range(total_days + 1)]
+
+        # update global variables
+        fire_obs_by_incident[incident_id] = this_fire.copy()
+        for time in all_times:
+            if time not in incidents_by_time:
+                incidents_by_time[time] = []
+            incidents_by_time[time].append(incident_id)
+
+    lat_miles_by_incident = {}
+    lon_miles_by_incident = {}
+    knn_lookups = {}
+    hrrr_refs = {}
+
+    print(dt.datetime.now())
+    print('generating standardized grids and nearest neighbor references for HRRR merge')
+    # generate for reference a relevant hrrr slice and nearest neighbors lookup
+    sample_time = dt.datetime(2020, 1, 1, 12, 0)
+    ref_hrrr = extract_hrrr(sample_time, weather_fields)
+
+    # for every incident
+    for incident_id in fire_pixels['INCIDENT_IDENTIFIER'].unique():
+
+        # generate the associated grid for study
+        bbox = boundaries.set_index('INCIDENT_IDENTIFIER').loc[incident_id, 'bbox']
+        miles_per_lat, miles_per_lon = local_miles_per_lat_lon(bbox)
+        grid = get_grid_from_bbox(bbox, tick_miles)
+
+        try:
+            knn_lookup, ref_bbox = get_relevant_lookups(ref_hrrr, grid, miles_per_lat, miles_per_lon, tick_miles)
+        except:
+            print(f'Failed knn_lookup {incident_id}')
+            knn_lookup = pd.DataFrame()
+            ref_bbox = pd.DataFrame()
+
+        path = f'{out_path}{incident_id}'
+        if not os.path.isdir(path):
+            os.mkdir(path)
+        knn_lookup.to_csv(f'{path}/grid_with_hrrr_neighbors.csv', index=False)
+        ref_bbox.to_csv(f'{path}/hrrr_reference.csv', index=False)
+
+        # store these two references
+        knn_lookups[incident_id] = knn_lookup
+        hrrr_refs[incident_id] = ref_bbox
+        lat_miles_by_incident[incident_id] = miles_per_lat
+        lon_miles_by_incident[incident_id] = miles_per_lon
+
+    print(dt.datetime.now())
+    print('gathering, slicing, and merging weather data to each fire')
+    # get a list of download codes for HRRR data
+    download_codes = weather_fields['download_code'].unique()
+
+    # for every time that we need to check
+    for time in sorted(incidents_by_time.keys()):
+
+        try:
+            # grab the hrrr data
+            hrrr = extract_hrrr(time, weather_fields)
+
+
+            # for every incident that needs data at this time
+            for inc_id in incidents_by_time[time]:
+
+                # slice and merge the data
+                this_fire = fire_obs_by_incident[inc_id]
+                knn_lookup = knn_lookups[inc_id]
+                ref_bbox = hrrr_refs[inc_id]
+                miles_per_lon = lon_miles_by_incident[inc_id]
+                miles_per_lat = lat_miles_by_incident[inc_id]
+
+                df = merge_fire_and_weather_time_slice(this_fire, hrrr, time, download_codes, knn_lookup, ref_bbox,
+                                                       time_buffer, tick_miles, miles_per_lon, miles_per_lat, beta)
+
+                # save
+                path = f'{out_path}{inc_id}'
+                file = time.isoformat().replace('-', '').replace(':', '').replace('T', 'UTC')
+                df.to_csv(f'{path}/{file}.csv', index=False)
+        except:
+            print(f'Failed {time}')
+            try:
+                print(f'inc_id = {inc_id}')
+            except:
+                print('HRRR extraction')
+
+    print(dt.datetime.now())
+
 def merge_fire_and_weather_data(fire_pixels, boundaries, incident_id, weather_fields, hr_utc=12, tick_miles=0.6,
                                 day_buffer=0, time_buffer=3600 * 24, beta=-1):
 
@@ -344,6 +493,14 @@ def merge_fire_and_weather_data(fire_pixels, boundaries, incident_id, weather_fi
         if knn_lookup is None:
             knn_lookup, ref_bbox = get_relevant_lookups(hrrr, grid, miles_per_lat, miles_per_lon, tick_miles)
 
+        output[time] = merge_fire_and_weather_time_slice(this_fire, hrrr, time, download_codes, knn_lookup, ref_bbox,
+                                      time_buffer, tick_miles, miles_per_lon, miles_per_lat, beta)
+
+    return output
+
+def merge_fire_and_weather_time_slice(this_fire, hrrr, time, download_codes, knn_lookup, ref_bbox,
+                                      time_buffer, tick_miles, miles_per_lon, miles_per_lat, beta):
+
         bbox_df = hrrr.loc[ref_bbox.index]
         if not all(bbox_df[['lat', 'lon']] == ref_bbox[['lat', 'lon']]):
             raise ValueError('Inconsistent HRRR data indexing')
@@ -353,8 +510,8 @@ def merge_fire_and_weather_data(fire_pixels, boundaries, incident_id, weather_fi
         slice_time = from_reference(time)
         fire_time_slice = slice_df(this_fire, 'time_from_reference', slice_time - time_buffer, slice_time).copy()
 
-        fire_time_slice['x'] = (fire_time_slice['LONGITUDE'] - grid['lon'].min()) * miles_per_lon / tick_miles
-        fire_time_slice['y'] = (fire_time_slice['LATITUDE'] - grid['lat'].min()) * miles_per_lat / tick_miles
+        fire_time_slice['x'] = (fire_time_slice['LONGITUDE'] - knn_lookup['lon'].min()) * miles_per_lon / tick_miles
+        fire_time_slice['y'] = (fire_time_slice['LATITUDE'] - knn_lookup['lat'].min()) * miles_per_lat / tick_miles
         fire_time_slice['x'] = np.round(fire_time_slice['x']).astype(int)
         fire_time_slice['y'] = np.round(fire_time_slice['y']).astype(int)
 
@@ -368,8 +525,11 @@ def merge_fire_and_weather_data(fire_pixels, boundaries, incident_id, weather_fi
         merged = pd.merge(knn_lookup[['x', 'y', 'lat', 'lon']], merged, on=['x', 'y'], how='outer', validate='1:1')
         assert len(merged) == len(knn_lookup)
 
-        output[time] = merged
+        return merged
 
-    return output
+
+if __name__ == "__main__":
+    main()
+
 
 
