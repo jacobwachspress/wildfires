@@ -1,5 +1,6 @@
 *.png
-*.ipynb
+Fire HRRR merge*.ipynb
+Fire SIT merge*.ipynb
 *.pyc
 *.exe
 *.mdb
