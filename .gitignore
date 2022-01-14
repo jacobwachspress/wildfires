@@ -10,3 +10,5 @@ Fire SIT merge*.ipynb
 *.cpg
 *.dbf
 *.prj
+data/raw
+data/raw/*
