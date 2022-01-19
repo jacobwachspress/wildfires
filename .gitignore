@@ -12,3 +12,5 @@ Fire SIT merge*.ipynb
 *.prj
 data/raw
 data/raw/*
+data/clean/fire_histories_2
+data/clean/fire_histories_2/*
