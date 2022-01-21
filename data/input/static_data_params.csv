@@ -1,0 +1,4 @@
+﻿layer,path,impute
+evc,wildfire_repo\LF2016_EVC_200_CONUS\LF2016_EVC_200_CONUS\Tif\LC16_EVC_200.tif,near
+slope,wildfire_repo\LF2016_Slp_200_CONUS\LF2016_Slp_200_CONUS\Tif\LC16_Slp_200.tif,bilinear
+aspect,wildfire_repo\LF2016_Asp_200_CONUS\LF2016_Asp_200_CONUS\Tif\LC16_Asp_200.tif,near
