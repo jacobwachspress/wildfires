@@ -1,0 +1,33 @@
+<VRTDataset rasterXSize="2" rasterYSize="2" subClass="VRTWarpedDataset">
+  <GeoTransform> -1.1076132594896752e+02,  1.0414455467565429e-02,  0.0000000000000000e+00,  3.3699760076667701e+01,  0.0000000000000000e+00, -8.7056806676459025e-03</GeoTransform>
+  <VRTRasterBand dataType="Float32" band="1" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-29</Description>
+    <ColorInterp>Gray</ColorInterp>
+  </VRTRasterBand>
+  <BlockXSize>2</BlockXSize>
+  <BlockYSize>2</BlockYSize>
+  <GDALWarpOptions>
+    <WarpMemoryLimit>6.71089e+07</WarpMemoryLimit>
+    <ResampleAlg>Cubic</ResampleAlg>
+    <WorkingDataType>Float32</WorkingDataType>
+    <Option name="INIT_DEST">0</Option>
+    <Option name="ERROR_OUT_IF_EMPTY_SOURCE_WINDOW">FALSE</Option>
+    <SourceDataset relativeToVRT="1">unscaled_fire_footprint.tif</SourceDataset>
+    <Transformer>
+      <ApproxTransformer>
+        <MaxError>0.125</MaxError>
+        <BaseTransformer>
+          <GenImgProjTransformer>
+            <SrcGeoTransform>-110.761325948967524,0.00347148515585514331,0,33.699760076667701,0,-0.00290189355588196807</SrcGeoTransform>
+            <SrcInvGeoTransform>31906.034730453368,288.061148212994851,0,11613.0241953087025,0,-344.602577848887222</SrcInvGeoTransform>
+            <DstGeoTransform>-110.761325948967524,0.0104144554675654286,0,33.699760076667701,0,-0.00870568066764590247</DstGeoTransform>
+            <DstInvGeoTransform>10635.3449101511233,96.0203827376649599,0,3871.00806510290158,0,-114.867525949629083</DstInvGeoTransform>
+          </GenImgProjTransformer>
+        </BaseTransformer>
+      </ApproxTransformer>
+    </Transformer>
+    <BandList>
+      <BandMapping src="1" dst="1" />
+    </BandList>
+  </GDALWarpOptions>
+</VRTDataset>

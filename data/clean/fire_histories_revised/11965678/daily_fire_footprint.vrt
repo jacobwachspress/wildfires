@@ -1,0 +1,45 @@
+<VRTDataset rasterXSize="6" rasterYSize="6" subClass="VRTWarpedDataset">
+  <GeoTransform> -1.1167429737652085e+02,  1.1365264006957457e-02,  0.0000000000000000e+00,  4.0372166975466364e+01,  0.0000000000000000e+00, -8.6959219887675441e-03</GeoTransform>
+  <VRTRasterBand dataType="Float32" band="1" subClass="VRTWarpedRasterBand">
+    <Description>2020-10-17</Description>
+    <ColorInterp>Gray</ColorInterp>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="2" subClass="VRTWarpedRasterBand">
+    <Description>2020-10-18</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="3" subClass="VRTWarpedRasterBand">
+    <Description>2020-10-19</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="4" subClass="VRTWarpedRasterBand">
+    <Description>2020-10-20</Description>
+  </VRTRasterBand>
+  <BlockXSize>6</BlockXSize>
+  <BlockYSize>6</BlockYSize>
+  <GDALWarpOptions>
+    <WarpMemoryLimit>6.71089e+07</WarpMemoryLimit>
+    <ResampleAlg>Cubic</ResampleAlg>
+    <WorkingDataType>Float32</WorkingDataType>
+    <Option name="INIT_DEST">0</Option>
+    <Option name="ERROR_OUT_IF_EMPTY_SOURCE_WINDOW">FALSE</Option>
+    <SourceDataset relativeToVRT="1">unscaled_fire_footprint.tif</SourceDataset>
+    <Transformer>
+      <ApproxTransformer>
+        <MaxError>0.125</MaxError>
+        <BaseTransformer>
+          <GenImgProjTransformer>
+            <SrcGeoTransform>-111.674297376520855,0.00378842133565248642,0,40.3721669754663637,0,-0.00289864066292251513</SrcGeoTransform>
+            <SrcInvGeoTransform>29477.7923262030708,263.962192005702093,0,13927.9654397595023,0,-344.989295427796662</SrcInvGeoTransform>
+            <DstGeoTransform>-111.674297376520855,0.0113652640069574571,0,40.3721669754663637,0,-0.00869592198876754409</DstGeoTransform>
+            <DstInvGeoTransform>9825.93077540102604,87.9873973352340499,0,4642.65514658650136,0,-114.996431809265573</DstInvGeoTransform>
+          </GenImgProjTransformer>
+        </BaseTransformer>
+      </ApproxTransformer>
+    </Transformer>
+    <BandList>
+      <BandMapping src="1" dst="1" />
+      <BandMapping src="2" dst="2" />
+      <BandMapping src="3" dst="3" />
+      <BandMapping src="4" dst="4" />
+    </BandList>
+  </GDALWarpOptions>
+</VRTDataset>
