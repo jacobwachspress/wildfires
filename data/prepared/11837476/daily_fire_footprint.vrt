@@ -1,0 +1,253 @@
+<VRTDataset rasterXSize="54" rasterYSize="40" subClass="VRTWarpedDataset">
+  <GeoTransform> -1.2216919833486020e+02,  1.2199214494823302e-02,  0.0000000000000000e+00,  4.4949992322701355e+01,  0.0000000000000000e+00, -8.6891834350642273e-03</GeoTransform>
+  <VRTRasterBand dataType="Float32" band="1" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-16</Description>
+    <ColorInterp>Gray</ColorInterp>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="2" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-17</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="3" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-18</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="4" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-19</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="5" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-20</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="6" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-21</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="7" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-22</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="8" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-23</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="9" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-24</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="10" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-25</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="11" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-26</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="12" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-27</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="13" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-28</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="14" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-29</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="15" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-30</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="16" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-31</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="17" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-01</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="18" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-02</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="19" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-03</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="20" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-04</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="21" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-05</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="22" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-06</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="23" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-07</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="24" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-08</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="25" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-09</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="26" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-10</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="27" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-11</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="28" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-12</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="29" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-13</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="30" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-14</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="31" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-15</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="32" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-16</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="33" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-17</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="34" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-18</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="35" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-19</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="36" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-20</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="37" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-21</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="38" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-22</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="39" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-23</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="40" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-24</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="41" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-25</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="42" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-26</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="43" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-27</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="44" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-28</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="45" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-29</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="46" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-30</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="47" subClass="VRTWarpedRasterBand">
+    <Description>2020-10-01</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="48" subClass="VRTWarpedRasterBand">
+    <Description>2020-10-02</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="49" subClass="VRTWarpedRasterBand">
+    <Description>2020-10-03</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="50" subClass="VRTWarpedRasterBand">
+    <Description>2020-10-04</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="51" subClass="VRTWarpedRasterBand">
+    <Description>2020-10-05</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="52" subClass="VRTWarpedRasterBand">
+    <Description>2020-10-06</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="53" subClass="VRTWarpedRasterBand">
+    <Description>2020-10-07</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="54" subClass="VRTWarpedRasterBand">
+    <Description>2020-10-08</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="55" subClass="VRTWarpedRasterBand">
+    <Description>2020-10-09</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="56" subClass="VRTWarpedRasterBand">
+    <Description>2020-10-10</Description>
+  </VRTRasterBand>
+  <BlockXSize>54</BlockXSize>
+  <BlockYSize>40</BlockYSize>
+  <GDALWarpOptions>
+    <WarpMemoryLimit>6.71089e+07</WarpMemoryLimit>
+    <ResampleAlg>Cubic</ResampleAlg>
+    <WorkingDataType>Float32</WorkingDataType>
+    <Option name="INIT_DEST">0</Option>
+    <Option name="ERROR_OUT_IF_EMPTY_SOURCE_WINDOW">FALSE</Option>
+    <SourceDataset relativeToVRT="1">unscaled_fire_footprint.tif</SourceDataset>
+    <Transformer>
+      <ApproxTransformer>
+        <MaxError>0.125</MaxError>
+        <BaseTransformer>
+          <GenImgProjTransformer>
+            <SrcGeoTransform>-122.169198334860198,0.00406640483160776792,0,44.9499923227013554,0,-0.00289639447835474302</SrcGeoTransform>
+            <SrcInvGeoTransform>30043.5405214087259,245.917472905574385,0,15519.2922299156508,0,-345.256838277096904</SrcInvGeoTransform>
+            <DstGeoTransform>-122.169198334860198,0.012199214494823302,0,44.9499923227013554,0,-0.00868918343506422733</DstGeoTransform>
+            <DstInvGeoTransform>10014.5135071362438,81.9724909685248093,0,5173.09740997188419,0,-115.08561275903233</DstInvGeoTransform>
+          </GenImgProjTransformer>
+        </BaseTransformer>
+      </ApproxTransformer>
+    </Transformer>
+    <BandList>
+      <BandMapping src="1" dst="1" />
+      <BandMapping src="2" dst="2" />
+      <BandMapping src="3" dst="3" />
+      <BandMapping src="4" dst="4" />
+      <BandMapping src="5" dst="5" />
+      <BandMapping src="6" dst="6" />
+      <BandMapping src="7" dst="7" />
+      <BandMapping src="8" dst="8" />
+      <BandMapping src="9" dst="9" />
+      <BandMapping src="10" dst="10" />
+      <BandMapping src="11" dst="11" />
+      <BandMapping src="12" dst="12" />
+      <BandMapping src="13" dst="13" />
+      <BandMapping src="14" dst="14" />
+      <BandMapping src="15" dst="15" />
+      <BandMapping src="16" dst="16" />
+      <BandMapping src="17" dst="17" />
+      <BandMapping src="18" dst="18" />
+      <BandMapping src="19" dst="19" />
+      <BandMapping src="20" dst="20" />
+      <BandMapping src="21" dst="21" />
+      <BandMapping src="22" dst="22" />
+      <BandMapping src="23" dst="23" />
+      <BandMapping src="24" dst="24" />
+      <BandMapping src="25" dst="25" />
+      <BandMapping src="26" dst="26" />
+      <BandMapping src="27" dst="27" />
+      <BandMapping src="28" dst="28" />
+      <BandMapping src="29" dst="29" />
+      <BandMapping src="30" dst="30" />
+      <BandMapping src="31" dst="31" />
+      <BandMapping src="32" dst="32" />
+      <BandMapping src="33" dst="33" />
+      <BandMapping src="34" dst="34" />
+      <BandMapping src="35" dst="35" />
+      <BandMapping src="36" dst="36" />
+      <BandMapping src="37" dst="37" />
+      <BandMapping src="38" dst="38" />
+      <BandMapping src="39" dst="39" />
+      <BandMapping src="40" dst="40" />
+      <BandMapping src="41" dst="41" />
+      <BandMapping src="42" dst="42" />
+      <BandMapping src="43" dst="43" />
+      <BandMapping src="44" dst="44" />
+      <BandMapping src="45" dst="45" />
+      <BandMapping src="46" dst="46" />
+      <BandMapping src="47" dst="47" />
+      <BandMapping src="48" dst="48" />
+      <BandMapping src="49" dst="49" />
+      <BandMapping src="50" dst="50" />
+      <BandMapping src="51" dst="51" />
+      <BandMapping src="52" dst="52" />
+      <BandMapping src="53" dst="53" />
+      <BandMapping src="54" dst="54" />
+      <BandMapping src="55" dst="55" />
+      <BandMapping src="56" dst="56" />
+    </BandList>
+  </GDALWarpOptions>
+</VRTDataset>

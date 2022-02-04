@@ -1,4 +1,5 @@
 from osgeo import gdal
+import json
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,7 +9,8 @@ import datetime as dt
 import glob
 from PIL import Image
 
-def preprocess(dropbox_path, scale=0.6, out_path='data/clean/fire_histories_revised', gifs=False, weather=False):
+def preprocess(dropbox_path, scale=0.6, gdal_path='data/prepared',
+               clean_path='data/processed', gifs=False, weather=False):
 
     # prevent gdal from printing errors to command prompt without throwing error
     gdal.UseExceptions()
@@ -28,8 +30,8 @@ def preprocess(dropbox_path, scale=0.6, out_path='data/clean/fire_histories_revi
     df['path'] = dropbox_path + "\\" + df['path']
 
     # if out_path is not a directory, make it (needs directory one above to exist)
-    if not os.path.isdir(out_path):
-        os.mkdir(out_path)
+    if not os.path.isdir(gdal_path):
+        os.mkdir(gdal_path)
 
     # for each fire
     for i, fire in boundaries.iterrows():
@@ -39,7 +41,7 @@ def preprocess(dropbox_path, scale=0.6, out_path='data/clean/fire_histories_revi
         inc_id = fire['INCIDENT_IDENTIFIER']
 
         # define a subdirectory for this fire, create it if needed
-        fire_out_path = f'{out_path}/{inc_id}'
+        fire_out_path = f'{gdal_path}/{inc_id}'
         if not os.path.isdir(fire_out_path):
             os.mkdir(fire_out_path)
 
@@ -50,11 +52,18 @@ def preprocess(dropbox_path, scale=0.6, out_path='data/clean/fire_histories_revi
         ds = generate_static_data(df, lon_res, lat_res, new_bbox, fire_out_path)
 
         # get the daily fire footprint from this bounding box and the fire observation data
-        _ = generate_daily_fire_footprint(inc_id, ds, fire_pixels, new_bbox, scale, out_path)
+        _ = generate_daily_fire_footprint(inc_id, ds, fire_pixels, new_bbox, scale, gdal_path)
+
+    # clean completely and write to clean path
+    time_fxx = [{'time': '12z', 'fxx': 'f00'}]
+    hrrr = dropbox_path + '/wildfire_repo/hrrr2'
+    inc_ids = os.listdir(gdal_path)
+    for inc_id in inc_ids:
+        process_single_fire_data(gdal_path, clean_path, hrrr, inc_id, time_fxx)
 
     # make fire footprint gifs if needed
     if gifs:
-        make_gifs(out_path)
+        make_gifs(gdal_path)
 
     # get daily weather data if needed
     if weather:
@@ -179,14 +188,13 @@ def generate_daily_fire_footprint(inc_id, ref_ds, fire_obs, fbbox, ref_scale, pa
     first_day = dt.datetime.strptime(days[0], '%Y-%m-%d')
     last_day = dt.datetime.strptime(days[-1], '%Y-%m-%d')
     delta = last_day - first_day
-    all_days = [first_day + dt.timedelta(days=i) for i in range(delta.days + 1)]
+    all_days = [first_day + dt.timedelta(days=i) for i in range(-1, delta.days + 2)]
     all_days = [day.strftime('%Y-%m-%d') for day in all_days]
 
     drv = gdal.GetDriverByName("GTiff")
     width = int(size[1])
     height = int(size[0])
     ds = drv.Create(f'{path}/{inc_id}/unscaled_fire_footprint.tif', width, height, len(all_days), gdal.GDT_Float32)
-
     # re-format the bounding box
     fbbox2 = [[fbbox[1], fbbox[3]], [fbbox[0], fbbox[2]]]
 
@@ -213,8 +221,110 @@ def generate_daily_fire_footprint(inc_id, ref_ds, fire_obs, fbbox, ref_scale, pa
         tr = ref_ds.GetGeoTransform()
     ds2 = gdal.Warp(f'{path}/{inc_id}/daily_fire_footprint.vrt', ds, format='VRT', xRes=abs(tr[1]), yRes=abs(tr[5]),
                     resampleAlg='cubic', outputBounds=fbbox)
+    del ds2
 
-    return ds2
+    return 1
+
+
+def get_grid_bounds_from_geo_ds(ds):
+    tr = ds.GetGeoTransform()
+    bounds = [tr[0], tr[3] + ds.RasterYSize * tr[5], tr[0] + ds.RasterXSize * tr[1], tr[3]]
+    return tr[1], -tr[5], bounds
+
+
+def process_single_fire_data(in_dir, out_dir, hrrr_path, inc_id, time_fxx_list):
+    # only do this if we have a fire footprint
+    if not os.path.isfile(f'{in_dir}/{inc_id}/daily_fire_footprint.vrt'):
+        return
+
+    # make directories if needed
+    if not os.path.isdir(out_dir):
+        os.mkdir(out_dir)
+    if not os.path.isdir(f'{out_dir}/{inc_id}'):
+        os.mkdir(f'{out_dir}/{inc_id}')
+
+    static_data = gdal.Open(f'{in_dir}/{inc_id}/static_data.vrt')
+
+    # make it an array and check we read it right
+    bands = [static_data.GetRasterBand(i + 1) for i in range(static_data.RasterCount)]
+    np_static_data = np.dstack([band.ReadAsArray() for band in bands])
+    if np.all(np_static_data[:, :, -1] == -9999):
+        raise ValueError(f'Static data read in wrong: {inc_id}')
+
+    # save to numpy
+    np.save(f'{out_dir}/{inc_id}/static_data.npy', np_static_data)
+
+    # save json with documentation of the layers
+    static_data_lookup = pd.read_csv('data/input/static_data_params.csv')
+    static_data_lookup = dict(zip(static_data_lookup['layer'], static_data_lookup.index))
+    with open(f'{out_dir}/{inc_id}/static_data.json', 'w') as f:
+        json.dump(static_data_lookup, f)
+
+    # read geotransform info from static data, to be used to read weather data later
+    lon_res, lat_res, fire_bbox = get_grid_bounds_from_geo_ds(static_data)
+
+    # read fire footprint data, get number of days
+    fire_footprint = gdal.Open(f'{in_dir}/{inc_id}/daily_fire_footprint.vrt')
+    num_days = fire_footprint.RasterCount
+
+    # for each fire day
+    for fire_day in range(1, num_days + 1):
+
+        # make numbered subdirectory
+        if not os.path.isdir(f'{out_dir}/{inc_id}/{fire_day}'):
+            os.mkdir(f'{out_dir}/{inc_id}/{fire_day}')
+
+        # get the raster band and the day
+        fire = fire_footprint.GetRasterBand(fire_day)
+        day = fire.GetDescription()
+        day = day.replace('-', '')
+
+        # for the first day only, save some global info about the fire
+        if fire_day == 1:
+            with open(f'{out_dir}/{inc_id}/info.json', 'w') as f:
+                json.dump({'transform': static_data.GetGeoTransform(),
+                           'shape': np_static_data.shape[0:2],
+                           'start_day': day,
+                           'num_days': num_days},
+                          f)
+
+        # read the fire footprint for the day as an array, and save
+        fire = fire.ReadAsArray()
+        np.save(f'{out_dir}/{inc_id}/{fire_day}/fire.npy', fire)
+
+        # for each set of time/fxx params in the list
+        for d in time_fxx_list:
+
+            # prepare the regex to grab corresponding GRIB file
+            time = d['time']
+            fxx = d['fxx']
+            regex = f'{hrrr_path}/{day}/*{time}*{fxx}*grib2*'
+
+            # read the grib file
+            grib = glob.glob(regex)
+            grib = [i for i in grib if '.xml' not in i]
+            if len(grib) != 1:
+                print(regex)
+                raise ValueError("Not exactly one GRIB file found")
+            grib_file = grib[0]
+            ds = gdal.Open(grib_file)
+
+            # slice and warp to fire bounds using info from static data
+            warped = gdal.Warp('temp.vrt', ds, format='VRT', dstSRS='WGS84', xRes=lon_res, yRes=lat_res,
+                               resampleAlg='bilinear', outputBounds=fire_bbox)
+
+            # read weather data to array and save
+            np_weather_data = np.dstack([warped.GetRasterBand(i + 1).ReadAsArray() for i in range(warped.RasterCount)])
+            np.save(f'{out_dir}/{inc_id}/{fire_day}/weather_{time}_{fxx}.npy', np_weather_data)
+
+            # read and save info about the channels
+            with open(f'{hrrr_path}/{day}/band_lookup_{time}.json', 'r') as f:
+                band_lookup = json.load(f)
+            weather_lookup = {key: band_lookup[key] - 1 for key in band_lookup}
+            with open(f'{out_dir}/{inc_id}/{fire_day}/weather_{time}.json', 'w') as f:
+                json.dump(weather_lookup, f)
+
+    os.remove('temp.vrt')
 
 
 def make_gifs(path):

@@ -1,0 +1,77 @@
+<VRTDataset rasterXSize="9" rasterYSize="5" subClass="VRTWarpedDataset">
+  <GeoTransform> -1.2161766084791483e+02,  1.2133572092195689e-02,  0.0000000000000000e+00,  4.4483592573709082e+01,  0.0000000000000000e+00, -8.6896636836091227e-03</GeoTransform>
+  <VRTRasterBand dataType="Float32" band="1" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-16</Description>
+    <ColorInterp>Gray</ColorInterp>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="2" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-17</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="3" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-18</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="4" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-19</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="5" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-20</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="6" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-21</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="7" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-22</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="8" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-23</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="9" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-24</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="10" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-25</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="11" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-26</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="12" subClass="VRTWarpedRasterBand">
+    <Description>2020-08-27</Description>
+  </VRTRasterBand>
+  <BlockXSize>9</BlockXSize>
+  <BlockYSize>5</BlockYSize>
+  <GDALWarpOptions>
+    <WarpMemoryLimit>6.71089e+07</WarpMemoryLimit>
+    <ResampleAlg>Cubic</ResampleAlg>
+    <WorkingDataType>Float32</WorkingDataType>
+    <Option name="INIT_DEST">0</Option>
+    <Option name="ERROR_OUT_IF_EMPTY_SOURCE_WINDOW">FALSE</Option>
+    <SourceDataset relativeToVRT="1">unscaled_fire_footprint.tif</SourceDataset>
+    <Transformer>
+      <ApproxTransformer>
+        <MaxError>0.125</MaxError>
+        <BaseTransformer>
+          <GenImgProjTransformer>
+            <SrcGeoTransform>-121.617660847914834,0.00404452403073189692,0,44.4835925737090818,0,-0.00289655456120304147</SrcGeoTransform>
+            <SrcInvGeoTransform>30069.7090495236625,247.247881926675063,0,15357.415727475016,0,-345.237757090501589</SrcInvGeoTransform>
+            <DstGeoTransform>-121.617660847914834,0.012133572092195689,0,44.4835925737090818,0,-0.00868966368360912268</DstGeoTransform>
+            <DstInvGeoTransform>10023.2363498412215,82.4159606422250306,0,5119.13857582500623,0,-115.079252363500544</DstInvGeoTransform>
+          </GenImgProjTransformer>
+        </BaseTransformer>
+      </ApproxTransformer>
+    </Transformer>
+    <BandList>
+      <BandMapping src="1" dst="1" />
+      <BandMapping src="2" dst="2" />
+      <BandMapping src="3" dst="3" />
+      <BandMapping src="4" dst="4" />
+      <BandMapping src="5" dst="5" />
+      <BandMapping src="6" dst="6" />
+      <BandMapping src="7" dst="7" />
+      <BandMapping src="8" dst="8" />
+      <BandMapping src="9" dst="9" />
+      <BandMapping src="10" dst="10" />
+      <BandMapping src="11" dst="11" />
+      <BandMapping src="12" dst="12" />
+    </BandList>
+  </GDALWarpOptions>
+</VRTDataset>

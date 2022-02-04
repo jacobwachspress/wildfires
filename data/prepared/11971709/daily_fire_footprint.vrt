@@ -1,0 +1,49 @@
+<VRTDataset rasterXSize="4" rasterYSize="3" subClass="VRTWarpedDataset">
+  <GeoTransform> -1.1183968492786798e+02,  1.2051849683999629e-02,  0.0000000000000000e+00,  4.4076229801460180e+01,  0.0000000000000000e+00, -8.6902726400737776e-03</GeoTransform>
+  <VRTRasterBand dataType="Float32" band="1" subClass="VRTWarpedRasterBand">
+    <Description>2020-11-03</Description>
+    <ColorInterp>Gray</ColorInterp>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="2" subClass="VRTWarpedRasterBand">
+    <Description>2020-11-04</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="3" subClass="VRTWarpedRasterBand">
+    <Description>2020-11-05</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="4" subClass="VRTWarpedRasterBand">
+    <Description>2020-11-06</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="5" subClass="VRTWarpedRasterBand">
+    <Description>2020-11-07</Description>
+  </VRTRasterBand>
+  <BlockXSize>4</BlockXSize>
+  <BlockYSize>3</BlockYSize>
+  <GDALWarpOptions>
+    <WarpMemoryLimit>6.71089e+07</WarpMemoryLimit>
+    <ResampleAlg>Cubic</ResampleAlg>
+    <WorkingDataType>Float32</WorkingDataType>
+    <Option name="INIT_DEST">0</Option>
+    <Option name="ERROR_OUT_IF_EMPTY_SOURCE_WINDOW">FALSE</Option>
+    <SourceDataset relativeToVRT="1">unscaled_fire_footprint.tif</SourceDataset>
+    <Transformer>
+      <ApproxTransformer>
+        <MaxError>0.125</MaxError>
+        <BaseTransformer>
+          <GenImgProjTransformer>
+            <SrcGeoTransform>-111.839684927867978,0.00401728322799987676,0,44.0762298014601797,0,-0.00289675754669125977</SrcGeoTransform>
+            <SrcInvGeoTransform>27839.6315570586921,248.924445513362429,0,15215.7124270911172,0,-345.213565126367598</SrcInvGeoTransform>
+            <DstGeoTransform>-111.839684927867978,0.0120518496839996294,0,44.0762298014601797,0,-0.00869027264007377759</DstGeoTransform>
+            <DstInvGeoTransform>9279.87718568623131,82.9748151711208095,0,5071.90414236370725,0,-115.07118837545589</DstInvGeoTransform>
+          </GenImgProjTransformer>
+        </BaseTransformer>
+      </ApproxTransformer>
+    </Transformer>
+    <BandList>
+      <BandMapping src="1" dst="1" />
+      <BandMapping src="2" dst="2" />
+      <BandMapping src="3" dst="3" />
+      <BandMapping src="4" dst="4" />
+      <BandMapping src="5" dst="5" />
+    </BandList>
+  </GDALWarpOptions>
+</VRTDataset>

@@ -17,7 +17,7 @@ def main():
     viirs_path = r"C:\Users\mit\Dropbox (MIT)\Jacob_Sequoia_Sara\example_data\viirs_npp_2020\fire_archive_SV-C2_230749.shp"
     SIT_conn_str = (r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};'
                     r'DBQ=C:\Users\mit\Documents\wildfires\data\sit\2020 SIT DATA.accdb;')
-    boundaries_path = 'data/historical_perimeters/InteragencyFirePerimeterHistory.shp'
+    boundaries_path = 'data/raw/historical_perimeters/InteragencyFirePerimeterHistory.shp'
 
     all_fire_obs, boundaries, fire_sit_lookup = get_fire_pixels(viirs_path, SIT_conn_str, boundaries_path, 2020)
     all_fire_obs.to_csv('data/clean/viirs.csv', index=False)

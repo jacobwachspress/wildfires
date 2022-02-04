@@ -1,0 +1,93 @@
+<VRTDataset rasterXSize="21" rasterYSize="13" subClass="VRTWarpedDataset">
+  <GeoTransform> -1.2220633173386264e+02,  1.2453485986923377e-02,  0.0000000000000000e+00,  4.6003604104366609e+01,  0.0000000000000000e+00, -8.6873946717750290e-03</GeoTransform>
+  <VRTRasterBand dataType="Float32" band="1" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-07</Description>
+    <ColorInterp>Gray</ColorInterp>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="2" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-08</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="3" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-09</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="4" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-10</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="5" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-11</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="6" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-12</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="7" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-13</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="8" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-14</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="9" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-15</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="10" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-16</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="11" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-17</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="12" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-18</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="13" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-19</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="14" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-20</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="15" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-21</Description>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="16" subClass="VRTWarpedRasterBand">
+    <Description>2020-09-22</Description>
+  </VRTRasterBand>
+  <BlockXSize>21</BlockXSize>
+  <BlockYSize>13</BlockYSize>
+  <GDALWarpOptions>
+    <WarpMemoryLimit>6.71089e+07</WarpMemoryLimit>
+    <ResampleAlg>Cubic</ResampleAlg>
+    <WorkingDataType>Float32</WorkingDataType>
+    <Option name="INIT_DEST">0</Option>
+    <Option name="ERROR_OUT_IF_EMPTY_SOURCE_WINDOW">FALSE</Option>
+    <SourceDataset relativeToVRT="1">unscaled_fire_footprint.tif</SourceDataset>
+    <Transformer>
+      <ApproxTransformer>
+        <MaxError>0.125</MaxError>
+        <BaseTransformer>
+          <GenImgProjTransformer>
+            <SrcGeoTransform>-122.20633173386264,0.0041511619956411264,0,46.0036041043666089,0,-0.00289579822392501025</SrcGeoTransform>
+            <SrcInvGeoTransform>29439.0659439896117,240.896404681396916,0,15886.3292767728144,0,-345.327927801745943</SrcInvGeoTransform>
+            <DstGeoTransform>-122.20633173386264,0.0124534859869233766,0,46.0036041043666089,0,-0.00868739467177502903</DstGeoTransform>
+            <DstInvGeoTransform>9813.0219813298736,80.2988015604656482,0,5295.44309225760571,0,-115.109309267248662</DstInvGeoTransform>
+          </GenImgProjTransformer>
+        </BaseTransformer>
+      </ApproxTransformer>
+    </Transformer>
+    <BandList>
+      <BandMapping src="1" dst="1" />
+      <BandMapping src="2" dst="2" />
+      <BandMapping src="3" dst="3" />
+      <BandMapping src="4" dst="4" />
+      <BandMapping src="5" dst="5" />
+      <BandMapping src="6" dst="6" />
+      <BandMapping src="7" dst="7" />
+      <BandMapping src="8" dst="8" />
+      <BandMapping src="9" dst="9" />
+      <BandMapping src="10" dst="10" />
+      <BandMapping src="11" dst="11" />
+      <BandMapping src="12" dst="12" />
+      <BandMapping src="13" dst="13" />
+      <BandMapping src="14" dst="14" />
+      <BandMapping src="15" dst="15" />
+      <BandMapping src="16" dst="16" />
+    </BandList>
+  </GDALWarpOptions>
+</VRTDataset>
