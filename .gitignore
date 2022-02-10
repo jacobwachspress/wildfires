@@ -1,4 +1,5 @@
 *.png
+*checkpoint.ipynb
 *.keras
 Fire HRRR merge*.ipynb
 Fire SIT merge*.ipynb
@@ -16,7 +17,13 @@ data/raw/*
 *evc.vrt
 *aspect.vrt
 *slope.vrt
+data/cnn_input/
+data/cnn_input/*
 data/cnn_input2
 data/cnn_input2/*
 data/cnn_input3
 data/cnn_input3/*
+data/clean/fire_histories_revised
+data/clean/fire_histories_revised/*
+Rough geotiff user guide.ipynb
+sample preprocessing client.ipynb
