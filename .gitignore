@@ -16,5 +16,7 @@ data/raw/*
 *evc.vrt
 *aspect.vrt
 *slope.vrt
-
-CNN sandbox*
+data/cnn_input2
+data/cnn_input2/*
+data/cnn_input3
+data/cnn_input3/*
