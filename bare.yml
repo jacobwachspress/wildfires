@@ -1,0 +1,11 @@
+name: bare
+channels:
+  - defaults
+  - conda-forge
+  - bioconda
+dependencies:
+  - tensorflow
+  - h5py<3.0.0
+  - pandas
+  - pydot
+

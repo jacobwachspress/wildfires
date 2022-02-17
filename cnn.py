@@ -1,36 +1,29 @@
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 from tensorflow import keras
 from tensorflow.keras.layers import Conv2D, MaxPool2D, Flatten, Dense, Dropout, Lambda, BatchNormalization
 import tensorflow as tf
 import numpy as np
 import json
-from glob import glob
 import os
+import sys
 
 
-def main():
+def main(config_file):
 
-    layers = ['fire', 'downwind', 'upslope', 'wind', 'TMP:2 m', 'SPFH:2 m', 'LTNG', 'PRATE', 'PRES:surface']
-    conv_ixs = [0, 1, 2, 3]
-    point_ixs = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    with open(config_file, 'r') as json_file:
+        config = json.load(json_file)
 
-    in_path = 'data/test'
-    input_path = 'data/cnn_input5'
+    if not os.path.isdir(config['input_path']):
+        generate_input_numpy_data(config)
 
-    cnn.generate_input_numpy_data(in_path, input_path, layers, dim=10, threshold=0.2)
+    model = make_model(config)
 
-    input_shape = np.load(f'{input_path}/0.npy').shape
+    all_IDs = np.load(f"{config['input_path']}/IDs.npy")
+    train, val, train_inc_ids, val_inc_ids = train_val_split(all_IDs)
+    fit_model(config, model, train, val)
 
-    model = cnn.make_model(conv_ixs, point_ixs, input_shape, 'test')
-
-    outputs = np.load(f'{input_path}/outputs.npy')
-    ix_to_keep = np.arange(outputs.shape[0])
-    np.random.seed(8)
-    np.random.shuffle(ix_to_keep)
-    split = int(np.floor(0.8 * len(ix_to_keep)))
-    train = ix_to_keep[:split]
-    val = ix_to_keep[split:]
-
-    model = cnn.fit_model(input_path, model, train, val, out_file='cnn_from_scratch.keras', epochs=2)
+    return 1
 
 
 def slope_aspect_wind_transform(slope, aspect, u_wind, v_wind, i, j):
@@ -55,6 +48,7 @@ def slope_aspect_wind_transform(slope, aspect, u_wind, v_wind, i, j):
 
     # get the pixel distance from each pixel to (i, j)
     dist = (v_dist ** 2 + u_dist ** 2) ** 0.5
+    dist[i, j] = 1
 
     # get the U and V component of the direction of the upslope
     # (270 degrees is up E, 180 is up N)
@@ -76,13 +70,14 @@ def slope_aspect_wind_transform(slope, aspect, u_wind, v_wind, i, j):
     return dist, upslope, downwind, wind
 
 
-def basic_cnn_preprocess(path, inc_id, day, i, j, dim, time, fxx, threshold, layer_names):
-    with open(f'{path}/{inc_id}/static_data.json', 'r') as f:
-        static_data_lookup = json.load(f)
+def basic_cnn_preprocess(path, inc_id, fire_level_info, day, i, j, dim, time, fxx,
+                         threshold, layer_names):
 
-    static_data = np.load(f'{path}/{inc_id}/static_data.npy')
-    slope = static_data[:, :, static_data_lookup['slope']].clip(0, np.inf)
-    aspect = static_data[:, :, static_data_lookup['aspect']].clip(0, np.inf)
+    slope = fire_level_info['slope']
+    aspect = fire_level_info['aspect']
+    fire = fire_level_info['fire'][day-1, :, :]
+    past_burn = fire_level_info['past_burn'][day-1, :, :]
+    next_fire = fire_level_info['fire'][day, :, :]
 
     with open(f'{path}/{inc_id}/{day}/weather_{time}.json', 'r') as f:
         weather_data_lookup = json.load(f)
@@ -101,23 +96,117 @@ def basic_cnn_preprocess(path, inc_id, day, i, j, dim, time, fxx, threshold, lay
     layers['inv_dist'] = 1 / layers['dist']
     layers['inv_dist'][i, j] = layers['inv_dist'].min()
 
-    layers['fire'] = np.load(f'{path}/{inc_id}/{day}/fire.npy')
+    layers['fire'] = fire
+    layers['past_burn'] = past_burn
 
     to_stack = [layers[name] for name in layer_names]
 
     stack = np.dstack(to_stack)
     stack = stack[i - dim:i + dim + 1, j - dim:j + dim + 1, :]
 
-    next_fire_array = np.load(f'{path}/{inc_id}/{day + 1}/fire.npy')
-    output = (next_fire_array[i, j] > threshold).astype(int)
+    output = (next_fire[i, j] > threshold).astype(int)
 
     return stack, output
 
-def generate_input_numpy_data(in_path, out_path, layers, dim=10, threshold=0.2):
 
+def prior_burn(arr):
+
+    # get the index of the last time there was no burn
+    last_no_burn = np.where(arr == 0)[0]
+
+    # if there was a time with no burn
+    if len(last_no_burn) > 0:
+        last_no_burn = last_no_burn[-1]
+        prev_burn_days = np.sum(arr[:last_no_burn])
+    else:
+        prev_burn_days = 0
+
+    return prev_burn_days
+
+
+def get_fire_level_info(path, inc_ids, threshold):
+    fire_level_info = {}
+
+    for inc_id in inc_ids:
+        fire_level_info[inc_id] = {}
+
+        days = sorted([int(i) for i in os.listdir(f'{path}/{inc_id}') if '.' not in i])
+        fire_days = [np.load(f'{path}/{inc_id}/{day}/fire.npy') for day in days]
+        fire = np.asarray(fire_days)
+        fire_level_info[inc_id]['fire'] = fire
+
+        burned = (fire > threshold).astype(int)
+        past_burn = np.asarray([np.apply_along_axis(prior_burn, 0, burned[:day, :, :])
+                                for day in range(burned.shape[0])])
+        fire_level_info[inc_id]['past_burn'] = past_burn
+
+        with open(f'{path}/{inc_id}/static_data.json', 'r') as f:
+            static_data_lookup = json.load(f)
+
+        static_data = np.load(f'{path}/{inc_id}/static_data.npy')
+        slope = static_data[:, :, static_data_lookup['slope']].clip(0, np.inf)
+        aspect = static_data[:, :, static_data_lookup['aspect']].clip(0, np.inf)
+
+        fire_level_info[inc_id]['slope'] = slope
+        fire_level_info[inc_id]['aspect'] = aspect
+
+    return fire_level_info
+
+
+def train_val_split(IDs, ideal_train_frac=0.8, eps=0.05):
+    # get all inc_ids
+    inc_ids = IDs[:, 0]
+
+    # get the observation counts for each incident
+    incs, counts = np.unique(inc_ids, return_counts=True)
+
+    ## assign indices for train and validation set so that each fire is completely in one set ##
+
+    # initialize fraction in validation set to unacceptable value
+    val_frac = -1
+
+    # while fraction in validation set is too far off from ideal
+    while abs(val_frac + ideal_train_frac - 1) > eps:
+
+        # shuffle the IDs
+        order = np.arange(len(incs))
+        np.random.shuffle(order)
+        incs = incs[order]
+        counts = counts[order]
+
+        # find the first index where we have enough training samples (might be too many)
+        split = np.where(np.cumsum(counts) / np.sum(counts) > ideal_train_frac - eps)[0][0] + 1
+
+        # grab the corresponding train and validation inc_ids
+        train_inc_ids = incs[:split]
+        val_inc_ids = incs[split:]
+
+        # grab the indices from IDs corresponding to train and validation pixels
+        train = np.where(np.isin(IDs[:, 0], train_inc_ids))[0]
+        val = np.where(np.isin(IDs[:, 0], val_inc_ids))[0]
+
+        # check that the lengths make sense
+        if len(train) + len(val) != len(IDs):
+            raise ValueError('Some input observations not placed into exactly one of train and validation sets')
+        # update validation fraction
+        val_frac = len(val) / len(IDs)
+
+    return train, val, train_inc_ids, val_inc_ids
+
+def generate_input_numpy_data(config):
+
+    in_path = config['processed_path']
+    out_path = config['input_path']
+    layers = config['layers']
+    dim = config['dim']
+    buffer = config['buffer']
+    threshold = config['threshold']
+    max_samples = config['max_samples']
 
     if not os.path.isdir(out_path):
         os.mkdir(out_path)
+
+    assert buffer >= dim
 
     time = '12z'
     fxx = 'f00'
@@ -129,24 +218,53 @@ def generate_input_numpy_data(in_path, out_path, layers, dim=10, threshold=0.2):
         shape = np.load(f'{in_path}/{inc_id}/1/fire.npy').shape[0:2]
         days = sorted([int(i) for i in os.listdir(f'{in_path}/{inc_id}') if '.' not in i])
         days = days[:-1]
-        IDs = [(inc_id, day, i, j) for day in days for i in range(dim, shape[0] - dim) \
-               for j in range(dim, shape[1] - dim)]
+        IDs = [(inc_id, day, i, j) for day in days for i in range(buffer, shape[0] - buffer + 1) \
+               for j in range(buffer, shape[1] - buffer + 1)]
         all_IDs = all_IDs + IDs
 
+    all_IDs = np.asarray(all_IDs)
+
+    l = len(all_IDs)
+    if l > max_samples:
+
+        eps = max_samples / 10 / len(all_IDs)
+        ixs, _, inc_ids, _ = train_val_split(all_IDs, ideal_train_frac=max_samples/len(all_IDs),
+                                                 eps=eps)
+        all_IDs = all_IDs[ixs]
+
+        print(f'Cut {l} samples down to {len(all_IDs)}, {len(inc_ids)} fires kept')
+
+    fire_level_info_dict = get_fire_level_info(in_path, inc_ids, threshold)
+
+    np.save(f'{out_path}/IDs.npy', np.asarray(all_IDs))
     outps = []
     for ix, ID in enumerate(all_IDs):
         inc_id, day, i, j = ID
-        inp, outp = basic_cnn_preprocess(in_path, inc_id, day, i, j, dim, time, fxx, threshold, layers)
+        day = int(day)
+        i = int(i)
+        j = int(j)
+        fire_level_info = fire_level_info_dict[inc_id]
+        inp, outp = basic_cnn_preprocess(in_path, inc_id, fire_level_info,
+                                         day, i, j, dim, time, fxx, threshold, layers)
+
+        if np.any(inp != inp):
+            print(ID)
+            raise ValueError('NaNs')
 
         np.save(f'{out_path}/{ix}.npy', inp)
         outps.append(outp)
     np.save(f'{out_path}/outputs.npy', np.asarray(outps))
-    np.save(f'{out_path}/IDs.npy', np.asarray(all_IDs))
+
 
     return 1
 
 
-def make_model(conv_ixs, point_ixs, input_shape, name):
+def make_model(config):
+
+    conv_ixs = [i for i, layer in enumerate(config['layers']) if layer in config['conv_layers']]
+    point_ixs = [i for i, layer in enumerate(config['layers']) if layer in config['point_layers']]
+    input_shape = np.load(f'{config["input_path"]}/0.npy').shape
+
     input_data = keras.Input(shape=input_shape)
 
     m = int((input_shape[0] + 1) / 2)
@@ -165,38 +283,38 @@ def make_model(conv_ixs, point_ixs, input_shape, name):
     y = Dropout(0.2)(y)
     output_data = Dense(2, activation="softmax", name="Output")(y)
 
-    return keras.Model(input_data, output_data, name=name)
+    return keras.Model(input_data, output_data)
 
 
-def fit_model(data_path, model, train_ix, val_ix, out_file='cnn_from_scratch.keras', epochs=15):
+def fit_model(config, model, train_ix, val_ix):
 
-    training_generator = DataGenerator(data_path, train_ix)
-    validation_generator = DataGenerator(data_path, val_ix)
+    out_path = config['out_path']
 
-    model.compile(loss='sparse_categorical_crossentropy',
-                  optimizer='adam',
-                  metrics=['accuracy'])
+    if not os.path.isdir(out_path):
+        os.mkdir(out_path)
 
-    callbacks = [keras.callbacks.ModelCheckpoint(
-        filepath=out_file,
-        save_best_only=True,
-        monitor='val_acc')]
+    data_path = config['input_path']
 
-    model.fit_generator(generator=training_generator,
-                        validation_data=validation_generator,
-                        use_multiprocessing=False,
-                        callbacks=callbacks,
-                        epochs=epochs,
-                        workers=50)
+    model.compile(**config['compile'])
+
+    callbacks = [keras.callbacks.ModelCheckpoint(**config['callbacks'])]
+
+    if config['fit_style'] == 'fit_generator':
+        training_generator = DataGenerator(data_path, train_ix)
+        validation_generator = DataGenerator(data_path, val_ix)
+        model.fit(training_generator,
+                  validation_data=validation_generator,
+                  callbacks=callbacks,
+                  **config['fit_generator'])
 
     return model
 
 
 class DataGenerator(keras.utils.Sequence):
     'Generates data for Keras'
-    def __init__(self, data_path, list_IDs, batch_size=32, dim=10, shuffle=True):
+    def __init__(self, data_path, list_IDs, batch_size=32, shuffle=True):
         'Initialization'
-        self.dim = (2*dim + 1, 2*dim+1)
+        self.dim = np.load(f'{data_path}/1.npy').shape[:2]
         self.data_path = data_path
         self.batch_size = batch_size
         self.labels = np.load(f'{data_path}/outputs.npy')
@@ -243,3 +361,9 @@ class DataGenerator(keras.utils.Sequence):
             y[i] = self.labels[ID]
 
         return X, y
+
+if __name__ == "__main__":
+
+    config_file = sys.argv[1]
+    main(config_file)
+

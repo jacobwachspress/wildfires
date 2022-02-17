@@ -8,8 +8,9 @@ import os
 import datetime as dt
 import glob
 from PIL import Image
+import shutil
 
-def preprocess(dropbox_path, scale=0.6, gdal_path='data/prepared',
+def preprocess(dropbox_path, scale=0.6, buffer_miles=0, gdal_path='data/prepared',
                clean_path='data/processed', gifs=False, weather=False):
 
     # prevent gdal from printing errors to command prompt without throwing error
@@ -46,7 +47,7 @@ def preprocess(dropbox_path, scale=0.6, gdal_path='data/prepared',
             os.mkdir(fire_out_path)
 
         # get the normalized bounding box and lon/lat resolution
-        lon_res, lat_res, new_bbox = get_fire_grid_bounds(bbox, scale)
+        lon_res, lat_res, new_bbox = get_fire_grid_bounds(bbox, scale, buffer=buffer_miles)
 
         # get the static data for this bounding box
         ds = generate_static_data(df, lon_res, lat_res, new_bbox, fire_out_path)
@@ -60,6 +61,11 @@ def preprocess(dropbox_path, scale=0.6, gdal_path='data/prepared',
     inc_ids = os.listdir(gdal_path)
     for inc_id in inc_ids:
         process_single_fire_data(gdal_path, clean_path, hrrr, inc_id, time_fxx)
+
+    # no HRRR data outside of CONUS, drop here
+    bad_weather = [i for i in os.listdir(clean_path) if
+                   np.all(np.load(f'{clean_path}/{i}/1/weather_12z_f00.npy') == 0)]
+    [shutil.rmtree(f'{clean_path}/{i}') for i in bad_weather]
 
     # make fire footprint gifs if needed
     if gifs:
@@ -96,9 +102,6 @@ def local_miles_per_lon_lat(bbox, k=100):
 
 
 def get_fire_grid_bounds(bbox, scale, buffer=0):
-    # in case I want to add some buffer around the bbox
-    if buffer != 0:
-        raise NotImplementedError("Fire grid buffer not implemented")
 
     # get the local miles per degree longitude, miles per degree latitude
     miles_per_lon, miles_per_lat = local_miles_per_lon_lat(bbox)
@@ -108,14 +111,20 @@ def get_fire_grid_bounds(bbox, scale, buffer=0):
     lat_res = scale / miles_per_lat
 
     # extract the bounds to variables
-    lon_min = bbox[0]
-    lon_max = bbox[2]
-    lat_min = bbox[1]
-    lat_max = bbox[3]
+    lon_min = bbox[0] - buffer / miles_per_lon
+    lon_max = bbox[2] + buffer / miles_per_lon
+    lat_min = bbox[1] - buffer / miles_per_lat
+    lat_max = bbox[3] + buffer / miles_per_lat
 
     # find the length of the axes in the grid we will create
     lon_ticks = (lon_max - lon_min) / lon_res
     lat_ticks = (lat_max - lat_min) / lat_res
+
+    # in case I want to add some buffer around the bbox
+    if buffer != 0:
+        extra_ticks = int(np.round(buffer / scale))
+        lon_min - (buffer/miles_per_lon)
+        lat_ticks += 2 * extra_ticks
 
     # buffer this grid to a whole number of ticks in each dimension
     lon_buffer = (1 - np.mod(lon_ticks, 1))
