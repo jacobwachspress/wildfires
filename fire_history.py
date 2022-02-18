@@ -10,6 +10,12 @@ import glob
 from PIL import Image
 import shutil
 
+def main():
+
+    dropbox_path = r"C:\Users\mit\Dropbox (MIT)"
+    preprocess(dropbox_path, gifs=True, buffer_miles=10, gdal_path='data/prepared',
+                            clean_path='data/processed')
+
 def preprocess(dropbox_path, scale=0.6, buffer_miles=0, gdal_path='data/prepared',
                clean_path='data/processed', gifs=False, weather=False):
 
@@ -57,7 +63,7 @@ def preprocess(dropbox_path, scale=0.6, buffer_miles=0, gdal_path='data/prepared
 
     # clean completely and write to clean path
     time_fxx = [{'time': '12z', 'fxx': 'f00'}]
-    hrrr = dropbox_path + '/wildfire_repo/hrrr2'
+    hrrr = dropbox_path + '/wildfire_repo/hrrr'
     inc_ids = os.listdir(gdal_path)
     for inc_id in inc_ids:
         process_single_fire_data(gdal_path, clean_path, hrrr, inc_id, time_fxx)
@@ -371,4 +377,7 @@ def make_gifs(path):
 
             rm_files = [os.remove(f) for f in pngs]
     return 1
+
+if __name__ == '__main__':
+    main()
 

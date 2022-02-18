@@ -1,5 +1,5 @@
-<VRTDataset rasterXSize="8" rasterYSize="8" subClass="VRTWarpedDataset">
-  <GeoTransform> -1.4452541277524719e+02,  2.2317158436805689e-02,  0.0000000000000000e+00,  6.7231193277270918e+01,  0.0000000000000000e+00, -8.6582380677151776e-03</GeoTransform>
+<VRTDataset rasterXSize="42" rasterYSize="41" subClass="VRTWarpedDataset">
+  <GeoTransform> -1.4490480446867289e+02,  2.2317158436805689e-02,  0.0000000000000000e+00,  6.7374054205388219e+01,  0.0000000000000000e+00, -8.6582380677151776e-03</GeoTransform>
   <VRTRasterBand dataType="Float32" band="1" subClass="VRTWarpedRasterBand">
     <Description>2020-07-03</Description>
     <ColorInterp>Gray</ColorInterp>
@@ -40,8 +40,8 @@
   <VRTRasterBand dataType="Float32" band="13" subClass="VRTWarpedRasterBand">
     <Description>2020-07-15</Description>
   </VRTRasterBand>
-  <BlockXSize>8</BlockXSize>
-  <BlockYSize>8</BlockYSize>
+  <BlockXSize>42</BlockXSize>
+  <BlockYSize>41</BlockYSize>
   <GDALWarpOptions>
     <WarpMemoryLimit>6.71089e+07</WarpMemoryLimit>
     <ResampleAlg>Cubic</ResampleAlg>
@@ -54,10 +54,10 @@
         <MaxError>0.125</MaxError>
         <BaseTransformer>
           <GenImgProjTransformer>
-            <SrcGeoTransform>-144.52541277524719,0.00743905281226856386,0,67.2311932772709184,0,-0.00288607935590505949</SrcGeoTransform>
-            <SrcInvGeoTransform>19427.9320798602712,134.425715912486794,0,23294.9912273592236,0,-346.490819094752567</SrcInvGeoTransform>
-            <DstGeoTransform>-144.52541277524719,0.022317158436805689,0,67.2311932772709184,0,-0.00865823806771517761</DstGeoTransform>
-            <DstInvGeoTransform>6475.97735995342373,44.8085719708289432,0,7764.99707578640846,0,-115.49693969825087</DstInvGeoTransform>
+            <SrcGeoTransform>-144.904804468672893,0.00743905281226856386,0,67.3740542053882194,0,-0.00288607935590505949</SrcGeoTransform>
+            <SrcInvGeoTransform>19478.9320798602712,134.425715912486794,0,23344.4912273592236,0,-346.490819094752567</SrcInvGeoTransform>
+            <DstGeoTransform>-144.904804468672893,0.022317158436805689,0,67.3740542053882194,0,-0.00865823806771517761</DstGeoTransform>
+            <DstInvGeoTransform>6492.97735995342464,44.8085719708289432,0,7781.49707578640846,0,-115.49693969825087</DstInvGeoTransform>
           </GenImgProjTransformer>
         </BaseTransformer>
       </ApproxTransformer>

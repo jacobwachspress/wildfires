@@ -1,14 +1,14 @@
-<VRTDataset rasterXSize="6" rasterYSize="13">
+<VRTDataset rasterXSize="39" rasterYSize="47">
   <SRS dataAxisToSRSAxisMapping="2,1">GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]</SRS>
-  <GeoTransform> -1.1530281104651114e+02,  1.1699384503727745e-02,  0.0000000000000000e+00,  4.2299502376119001e+01,  0.0000000000000000e+00, -8.6930477875316291e-03</GeoTransform>
+  <GeoTransform> -1.1549585089082264e+02,  1.1699384503727745e-02,  0.0000000000000000e+00,  4.2447284188507041e+01,  0.0000000000000000e+00, -8.6930477875316291e-03</GeoTransform>
   <VRTRasterBand dataType="Int16" band="1">
     <NoDataValue>32767</NoDataValue>
     <ComplexSource>
       <SourceFilename relativeToVRT="1">evc.vrt</SourceFilename>
       <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="6" RasterYSize="13" DataType="Int16" BlockXSize="6" BlockYSize="13" />
-      <SrcRect xOff="0" yOff="0" xSize="6" ySize="13" />
-      <DstRect xOff="0" yOff="0" xSize="6" ySize="13" />
+      <SourceProperties RasterXSize="39" RasterYSize="47" DataType="Int16" BlockXSize="39" BlockYSize="47" />
+      <SrcRect xOff="0" yOff="0" xSize="39" ySize="47" />
+      <DstRect xOff="0" yOff="0" xSize="39" ySize="47" />
       <NODATA>32767</NODATA>
     </ComplexSource>
   </VRTRasterBand>
@@ -17,9 +17,9 @@
     <ComplexSource>
       <SourceFilename relativeToVRT="1">slope.vrt</SourceFilename>
       <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="6" RasterYSize="13" DataType="Int16" BlockXSize="6" BlockYSize="13" />
-      <SrcRect xOff="0" yOff="0" xSize="6" ySize="13" />
-      <DstRect xOff="0" yOff="0" xSize="6" ySize="13" />
+      <SourceProperties RasterXSize="39" RasterYSize="47" DataType="Int16" BlockXSize="39" BlockYSize="47" />
+      <SrcRect xOff="0" yOff="0" xSize="39" ySize="47" />
+      <DstRect xOff="0" yOff="0" xSize="39" ySize="47" />
       <NODATA>127</NODATA>
     </ComplexSource>
   </VRTRasterBand>
@@ -28,9 +28,9 @@
     <ComplexSource>
       <SourceFilename relativeToVRT="1">aspect.vrt</SourceFilename>
       <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="6" RasterYSize="13" DataType="Int16" BlockXSize="6" BlockYSize="13" />
-      <SrcRect xOff="0" yOff="0" xSize="6" ySize="13" />
-      <DstRect xOff="0" yOff="0" xSize="6" ySize="13" />
+      <SourceProperties RasterXSize="39" RasterYSize="47" DataType="Int16" BlockXSize="39" BlockYSize="47" />
+      <SrcRect xOff="0" yOff="0" xSize="39" ySize="47" />
+      <DstRect xOff="0" yOff="0" xSize="39" ySize="47" />
       <NODATA>32767</NODATA>
     </ComplexSource>
   </VRTRasterBand>
