@@ -4,8 +4,9 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - tensorflow
+  - tensorflow>=2.0
   - h5py<3.0.0
   - pandas
   - pydot
+  - python>=3.8
 
