@@ -1,6 +1,5 @@
 *.png
 *checkpoint.ipynb
-*.keras
 Fire HRRR merge*.ipynb
 Fire SIT merge*.ipynb
 *.pyc
