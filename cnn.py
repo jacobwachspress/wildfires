@@ -9,7 +9,9 @@ import os
 import sys
 
 
-def main(config_file):
+def main(date, config_number, path='data/input/configs'):
+
+    config_file = f'{path}/{date}/{config_number}/config.json'
 
     with open(config_file, 'r') as json_file:
         config = json.load(json_file)
@@ -165,8 +167,15 @@ def train_val_split(IDs, ideal_train_frac=0.8, eps=0.05):
     # initialize fraction in validation set to unacceptable value
     val_frac = -1
 
+    # random seed for reproducibility
+    seed = 8
+
     # while fraction in validation set is too far off from ideal
     while abs(val_frac + ideal_train_frac - 1) > eps:
+
+        # set seed
+        np.random.seed(seed)
+        seed += 1
 
         # shuffle the IDs
         order = np.arange(len(incs))
@@ -271,16 +280,22 @@ def make_model(config):
 
     x = Lambda(lambda t: tf.stack([t[..., i] for i in conv_ixs], axis=-1), name='Get_layers_for_conv')(input_data)
     x = BatchNormalization()(x)
-    x = Conv2D(5, kernel_size=(2, 2), activation="relu")(x)
+    if config['model']['conv_filters'] is not None:
+        x = Conv2D(config['model']['conv_filters'], kernel_size=(2, 2), activation="relu")(x)
     x = MaxPool2D()(x)
     x = Flatten()(x)
+    if config['model']['conv_dropout'] is not None:
+        x = Dropout(config['model']['conv_dropout'])(x)
     y = Lambda(lambda t: tf.stack([t[..., i] for i in point_ixs], axis=-1), name='Get_layers_for_point_estimates')(
         input_data)
     y = Lambda(lambda t: t[:, m, m], name='Get_point_data')(y)
     y = BatchNormalization()(y)
     y = keras.layers.Concatenate()([x, y])
-    y = Dense(256, activation="relu")(y)
-    y = Dropout(0.2)(y)
+    if config['model']['dense_nodes'] is not None:
+        y = Dense(config['model']['dense_nodes'], activation="relu")(y)
+    if config['model']['dense_dropout'] is not None:
+        y = Dropout(config['model']['dense_dropout'])(y)
+
     output_data = Dense(2, activation="softmax", name="Output")(y)
 
     return keras.Model(input_data, output_data)
@@ -291,11 +306,13 @@ def fit_model(config, model, train_ix, val_ix):
     out_path = config['out_path']
 
     if not os.path.isdir(out_path):
-        os.mkdir(out_path)
+        os.makedirs(out_path)
 
     data_path = config['input_path']
 
     model.compile(**config['compile'])
+    if config['learning_rate'] is not None:
+        keras.backend.set_value(model.optimizer.learning_rate, config['learning_rate'])
 
     callbacks = [keras.callbacks.ModelCheckpoint(**config['callbacks'])]
 
@@ -364,6 +381,7 @@ class DataGenerator(keras.utils.Sequence):
 
 if __name__ == "__main__":
 
-    config_file = sys.argv[1]
-    main(config_file)
+    date = sys.argv[1]
+    config_number = sys.argv[2]
+    main(date, config_number)
 
