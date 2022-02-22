@@ -23,6 +23,7 @@ def main(date, config_number, path='data/input/configs'):
 
     all_IDs = np.load(f"{config['input_path']}/IDs.npy")
     train, val, train_inc_ids, val_inc_ids = train_val_split(all_IDs)
+    	
     fit_model(config, model, train, val)
 
     return 1
@@ -315,6 +316,13 @@ def fit_model(config, model, train_ix, val_ix):
         keras.backend.set_value(model.optimizer.learning_rate, config['learning_rate'])
 
     callbacks = [keras.callbacks.ModelCheckpoint(**config['callbacks'])]
+    
+    d = config['fit_generator']['class_weight']
+    if d is not None:
+        d2 = {}
+        for key in d:
+            d2[int(key)] = d[key]
+        config['fit_generator']['class_weight'] = d2
 
     if config['fit_style'] == 'fit_generator':
         training_generator = DataGenerator(data_path, train_ix)
